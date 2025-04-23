@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useActionState } from "react"
+//import { useActionState } from "react"
 import {
   requestMobileOTP,
   requestEmailOTP,
@@ -20,21 +20,23 @@ import Link from "next/link"
 
 export default function SignInPage() {
   const router = useRouter()
-  const [mobileState, mobileAction, isPendingMobile] = useActionState(requestMobileOTP)
-  const [emailState, emailAction, isPendingEmail] = useActionState(requestEmailOTP)
-  const [verifyMobileState, verifyMobileAction, isPendingVerifyMobile] = useActionState(verifyMobileOTPAndLogin)
-  const [verifyEmailState, verifyEmailAction, isPendingVerifyEmail] = useActionState(verifyEmailOTPAndLogin)
+  const [isPendingMobile, setisPendingMobile] = useState(false)
+  const [mobileState, setmobileState] = useState(false)
+  // const [emailState, emailAction, isPendingEmail] = useActionState(requestEmailOTP)
+  // const [verifyMobileState, verifyMobileAction, isPendingVerifyMobile] = useActionState(verifyMobileOTPAndLogin)
+  // const [verifyEmailState, verifyEmailAction, isPendingVerifyEmail] = useActionState(verifyEmailOTPAndLogin)
 
   const [showMobileOTP, setShowMobileOTP] = useState(false)
   const [showEmailOTP, setShowEmailOTP] = useState(false)
   const [mobile, setMobile] = useState("")
   const [email, setEmail] = useState("")
 
-  const handleMobileOTPRequest = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const formData = new FormData()
-    formData.append("mobile", mobile)
-    const result = await mobileAction(formData)
+  async function handleMobileOTPRequest(formData: FormData)
+   {
+    
+    setisPendingMobile(true)
+    
+    const result = await requestMobileOTP(formData)
 
     if (result?.success) {
       setShowMobileOTP(true)
@@ -86,20 +88,13 @@ export default function SignInPage() {
 
             <TabsContent value="mobile">
               {!showMobileOTP ? (
-                <form onSubmit={handleMobileOTPRequest} className="space-y-4 mt-4">
+                <form action={handleMobileOTPRequest} className="space-y-4 mt-4">
                   <div className="space-y-2">
                     <Label htmlFor="mobile">Mobile Number</Label>
-                    <Input
-                      id="mobile"
-                      type="tel"
-                      placeholder="Enter your mobile number"
-                      value={mobile}
-                      onChange={(e) => setMobile(e.target.value)}
-                      required
-                    />
+                    <Input id="mobile" name="mobile" type="tel" placeholder="1234567890" required />
                   </div>
 
-                  {mobileState && !mobileState.success && <p className="text-sm text-red-500">{mobileState.message}</p>}
+            
 
                   <Button type="submit" className="w-full" disabled={isPendingMobile}>
                     {isPendingMobile ? "Sending OTP..." : "Send OTP"}

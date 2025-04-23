@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState } from "react"
+import { useState } from "react"
 import { registerUser } from "@/app/actions/auth-actions"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -11,11 +11,32 @@ import Link from "next/link"
 
 export default function SignUpPage() {
   const router = useRouter()
-  const [state, action, isPending] = useActionState(registerUser, {
-    onSuccess: () => {
-      router.push("/auth/signin")
-    },
-  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  async function handleSubmit(formData: FormData) {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const result = await registerUser(formData)
+
+      if (result.success) {
+        router.push("/dashboard")
+        router.refresh()
+      } else {
+        setError(result.message)
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  // const [state, action, isPending] = useActionState(registerUser, {
+  //   onSuccess: () => {
+  //     router.push("/auth/signin")
+  //   },
+  // })
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -25,7 +46,7 @@ export default function SignUpPage() {
           <CardDescription className="text-center">Enter your information to create an account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={action} className="space-y-4">
+          <form action={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <Input id="name" name="name" placeholder="John Doe" required />
@@ -46,12 +67,10 @@ export default function SignUpPage() {
               <Input id="password" name="password" type="password" required />
             </div>
 
-            {state && !state.success && <p className="text-sm text-red-500">{state.message}</p>}
+            
 
-            {state && state.success && <p className="text-sm text-green-500">{state.message}</p>}
-
-            <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? "Creating account..." : "Sign Up"}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Creating account..." : "Sign Up"}
             </Button>
           </form>
         </CardContent>

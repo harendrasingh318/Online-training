@@ -1,13 +1,13 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { getAllCourses } from "@/app/actions/course-actions"
+// import { getAllCourses } from "@/app/actions/course-actions"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 
 export default async function HomePage() {
-  const courses = await getAllCourses()
-  const featuredCourses = courses.slice(0, 3)
+  //const courses = await getAllCourses()
+ // const featuredCourses = courses.slice(0, 3)
 
   return (
     <div>
@@ -35,7 +35,7 @@ export default async function HomePage() {
       </section>
 
       {/* Featured Courses */}
-      <section className="py-16">
+      {/* <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-3xl font-bold">Featured Courses</h2>
@@ -84,7 +84,7 @@ export default async function HomePage() {
             </div>
           )}
         </div>
-      </section>
+      </section> */}
 
       {/* Features Section */}
       <section className="py-16 bg-muted">

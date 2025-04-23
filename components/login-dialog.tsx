@@ -28,9 +28,11 @@ import Link from "next/link"
 export default function LoginDialog({ trigger }: { trigger: React.ReactNode }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const [mobileState, mobileAction, isPendingMobile] = useActionState(requestMobileOTP)
+  const [isPendingMobile, setIsPendingMobile] = useState(false)
+  //const [mobileState, mobileAction, isPendingMobile] = useActionState(requestMobileOTP)
   const [emailState, emailAction, isPendingEmail] = useActionState(requestEmailOTP)
-  const [verifyMobileState, verifyMobileAction, isPendingVerifyMobile] = useActionState(verifyMobileOTPAndLogin)
+  const [isPendingVerifyMobile, setIsPendingVerifyMobile] = useState(false)
+ // const [verifyMobileState, verifyMobileAction, isPendingVerifyMobile] = useActionState(verifyMobileOTPAndLogin)
   const [verifyEmailState, verifyEmailAction, isPendingVerifyEmail] = useActionState(verifyEmailOTPAndLogin)
 
   const [showMobileOTP, setShowMobileOTP] = useState(false)
@@ -38,11 +40,12 @@ export default function LoginDialog({ trigger }: { trigger: React.ReactNode }) {
   const [mobile, setMobile] = useState("")
   const [email, setEmail] = useState("")
 
-  const handleMobileOTPRequest = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const formData = new FormData()
+  async function handleMobileOTPRequest(formData:FormData)  {
+    //e.preventDefault()
+   // const formData = new FormData()
+   setIsPendingMobile(true)
     formData.append("mobile", mobile)
-    const result = await mobileAction(formData)
+    const result = await requestMobileOTP(formData)
 
     if (result?.success) {
       setShowMobileOTP(true)
@@ -61,8 +64,10 @@ export default function LoginDialog({ trigger }: { trigger: React.ReactNode }) {
   }
 
   const handleMobileVerify = async (formData: FormData) => {
+
+    setIsPendingVerifyMobile(true)
     formData.append("mobile", mobile)
-    const result = await verifyMobileAction(formData)
+    const result = await verifyMobileOTPAndLogin(formData)
 
     if (result?.success) {
       setOpen(false)
@@ -97,7 +102,7 @@ export default function LoginDialog({ trigger }: { trigger: React.ReactNode }) {
 
           <TabsContent value="mobile">
             {!showMobileOTP ? (
-              <form onSubmit={handleMobileOTPRequest} className="space-y-4 mt-4">
+              <form action={handleMobileOTPRequest} className="space-y-4 mt-4">
                 <div className="space-y-2">
                   <Label htmlFor="mobile">Mobile Number</Label>
                   <Input
@@ -110,7 +115,7 @@ export default function LoginDialog({ trigger }: { trigger: React.ReactNode }) {
                   />
                 </div>
 
-                {mobileState && !mobileState.success && <p className="text-sm text-red-500">{mobileState.message}</p>}
+  
 
                 <Button type="submit" className="w-full" disabled={isPendingMobile}>
                   {isPendingMobile ? "Sending OTP..." : "Send OTP"}
@@ -123,9 +128,7 @@ export default function LoginDialog({ trigger }: { trigger: React.ReactNode }) {
                   <Input id="otp" name="otp" type="text" placeholder="Enter OTP sent to your mobile" required />
                 </div>
 
-                {verifyMobileState && !verifyMobileState.success && (
-                  <p className="text-sm text-red-500">{verifyMobileState.message}</p>
-                )}
+                
 
                 <Button type="submit" className="w-full" disabled={isPendingVerifyMobile}>
                   {isPendingVerifyMobile ? "Verifying..." : "Verify OTP"}

@@ -71,7 +71,7 @@ export default function LoginDialog({ trigger }: { trigger: React.ReactNode }) {
 
     if (result?.success) {
       setOpen(false)
-      router.refresh()
+      router.push("/dashboard")
     }
   }
 

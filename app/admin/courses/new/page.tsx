@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState } from "react"
+import { useActionState, useState } from "react"
 import { createCourse } from "@/app/actions/course-actions"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -12,11 +12,23 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 export default function NewCoursePage() {
   const router = useRouter()
-  const [state, action, isPending] = useActionState(createCourse, {
-    onSuccess: () => {
+  const [state, setState]= useState(false);
+  const [isPending, setIspending] =useState(false)
+  // const [state, action, isPending] = useActionState(createCourse, {
+  //   onSuccess: () => {
+  //     router.push("/admin/courses")
+  //   },
+  // })
+
+  async function newCourse(formData:FormData){
+    setIspending(true)
+
+    const result = await createCourse(formData);
+    if(result?.success){
       router.push("/admin/courses")
-    },
-  })
+    }
+
+  }
 
   return (
     <div className="container mx-auto py-10">
@@ -26,7 +38,7 @@ export default function NewCoursePage() {
           <CardDescription>Create a new course for your students</CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={action} className="space-y-6">
+          <form action={newCourse} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="title">Course Title</Label>
               <Input id="title" name="title" placeholder="Enter course title" required />
@@ -92,7 +104,7 @@ export default function NewCoursePage() {
               <Input id="instructor" name="instructor" placeholder="Enter instructor name" required />
             </div>
 
-            {state && !state.success && <p className="text-sm text-red-500">{state.message}</p>}
+           
 
             <div className="flex justify-end space-x-2">
               <Button type="button" variant="outline" onClick={() => router.push("/admin/courses")}>

@@ -22,9 +22,12 @@ export default function SignInPage() {
   const router = useRouter()
   const [isPendingMobile, setisPendingMobile] = useState(false)
   const [mobileState, setmobileState] = useState(false)
+  const [isPendingVerifyMobile, setIsPendingVerifyMobile] = useState(false)
+  const [isPendingEmail, setIsPendingEmail] = useState(false)
+  const [isPendingVerifyEmail , setIsPendingVerifyEmail] = useState(false)
   // const [emailState, emailAction, isPendingEmail] = useActionState(requestEmailOTP)
   // const [verifyMobileState, verifyMobileAction, isPendingVerifyMobile] = useActionState(verifyMobileOTPAndLogin)
-  // const [verifyEmailState, verifyEmailAction, isPendingVerifyEmail] = useActionState(verifyEmailOTPAndLogin)
+ //const [verifyEmailState, verifyEmailAction, isPendingVerifyEmail] = useActionState(verifyEmailOTPAndLogin)
 
   const [showMobileOTP, setShowMobileOTP] = useState(false)
   const [showEmailOTP, setShowEmailOTP] = useState(false)
@@ -47,7 +50,7 @@ export default function SignInPage() {
     e.preventDefault()
     const formData = new FormData()
     formData.append("email", email)
-    const result = await emailAction(formData)
+    const result = await requestEmailOTP(formData)
 
     if (result?.success) {
       setShowEmailOTP(true)
@@ -56,7 +59,7 @@ export default function SignInPage() {
 
   const handleMobileVerify = async (formData: FormData) => {
     formData.append("mobile", mobile)
-    const result = await verifyMobileAction(formData)
+    const result = await verifyMobileOTPAndLogin(formData)
 
     if (result?.success) {
       router.push("/dashboard")
@@ -65,7 +68,7 @@ export default function SignInPage() {
 
   const handleEmailVerify = async (formData: FormData) => {
     formData.append("email", email)
-    const result = await verifyEmailAction(formData)
+    const result = await verifyEmailOTPAndLogin(formData)
 
     if (result?.success) {
       router.push("/dashboard")
@@ -107,9 +110,7 @@ export default function SignInPage() {
                     <Input id="otp" name="otp" type="text" placeholder="Enter OTP sent to your mobile" required />
                   </div>
 
-                  {verifyMobileState && !verifyMobileState.success && (
-                    <p className="text-sm text-red-500">{verifyMobileState.message}</p>
-                  )}
+                 
 
                   <Button type="submit" className="w-full" disabled={isPendingVerifyMobile}>
                     {isPendingVerifyMobile ? "Verifying..." : "Verify OTP"}
@@ -133,7 +134,7 @@ export default function SignInPage() {
                     />
                   </div>
 
-                  {emailState && !emailState.success && <p className="text-sm text-red-500">{emailState.message}</p>}
+                  
 
                   <Button type="submit" className="w-full" disabled={isPendingEmail}>
                     {isPendingEmail ? "Sending OTP..." : "Send OTP"}
@@ -146,9 +147,7 @@ export default function SignInPage() {
                     <Input id="otp" name="otp" type="text" placeholder="Enter OTP sent to your email" required />
                   </div>
 
-                  {verifyEmailState && !verifyEmailState.success && (
-                    <p className="text-sm text-red-500">{verifyEmailState.message}</p>
-                  )}
+                  
 
                   <Button type="submit" className="w-full" disabled={isPendingVerifyEmail}>
                     {isPendingVerifyEmail ? "Verifying..." : "Verify OTP"}
